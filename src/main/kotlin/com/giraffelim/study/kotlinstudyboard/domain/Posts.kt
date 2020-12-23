@@ -9,7 +9,12 @@ import javax.persistence.Id
 data class Posts(
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
-        val title: String = "",
-        val content: String = "",
+        var title: String = "",
+        var content: String = "",
         val author: String = ""
-) : BaseTimeEntity()
+) : BaseTimeEntity() {
+    fun update(title: String, content: String) {
+        this.title = title
+        this.content = content
+    }
+}
