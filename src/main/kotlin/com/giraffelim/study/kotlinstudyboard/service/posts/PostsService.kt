@@ -35,4 +35,12 @@ class PostsService(val postsRepository: PostsRepository) {
         return id
     }
 
+    @Transactional
+    fun delete(id: Long) {
+        // 존재하는 게시글인지 확인
+        val post = postsRepository.findById(id).orElseThrow { IllegalArgumentException("해당 게시글이 없습니다!. id = $id") }
+        // 게시글이 존재하면 삭제
+        postsRepository.delete(post)
+    }
+
 }

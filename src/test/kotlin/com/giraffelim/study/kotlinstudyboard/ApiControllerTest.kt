@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import org.springframework.test.annotation.Rollback
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -49,5 +50,22 @@ class ApiControllerTest(@LocalServerPort val port: Int, @Autowired val postsRepo
         val postList = postsRepository.findAll()
         assertThat(updateExpectedTitle).isEqualTo(postList[0].title)
         assertThat(updateExpectedContent).isEqualTo(postList[0].content)
+    }
+
+    @Test
+    @Rollback(false)
+    fun 게시글_삭제() {
+        val post = postsRepository.save(Posts(title = "title", content = "content", author = "author"))
+
+        val deletePostId = post.id
+
+        val url = "http://localhost:$port/api/v1/posts/$deletePostId"
+
+        deletePostId?.let { postsRepository.findById(it) }?.ifPresent {
+            assertThat(it.id == 1L)
+        }
+
+        mockMvc.perform(delete(url)
+                .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isOk)
     }
 }
